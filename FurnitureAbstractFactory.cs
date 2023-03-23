@@ -20,18 +20,21 @@ namespace TestPurposes.Patterns.AbstractFactory
 
     public abstract class FurnitureAbstractFactory
     {
+        public abstract string Type { get; }
         public abstract Chair CreateChair();
         public abstract Table CreateTable();
     }
 
     public class ModernFurnitureFactory : FurnitureAbstractFactory
     {
+        public override string Type => "Modern";
         public override Chair CreateChair() => new ModernChair();
         public override Table CreateTable() => new ModernTable();
     }
 
     public class VenecianceFurnitureFactory : FurnitureAbstractFactory
     {
+        public override string Type => "Veneciance";
         public override Chair CreateChair() => new VenecianceChair();
         public override Table CreateTable() => new VenecianceTable();
     }
@@ -44,9 +47,6 @@ namespace TestPurposes.Patterns.AbstractFactory
     {
         public Chair Chair { get; init; }
         public Table Table { get; init; }
-
-        // немножко нарушаем SRP и OCP (помни: не суди да не судим будешь)
-        public void WhatInRoom() => Console.WriteLine($"В комнате: \n\tСтул: \"{Chair.Type}\"\n\tСтол: \"{Table.Type}\"\n");
     }
 
     public static class RoomBuilder
@@ -60,28 +60,20 @@ namespace TestPurposes.Patterns.AbstractFactory
 
     public static class AbstractFactoryTester
     {
-        public static void DealWithModernRoom()
+        public static void DealWithRoom(FurnitureAbstractFactory factory)
         {
-            FurnitureAbstractFactory modernFactory = new ModernFurnitureFactory();
-            Room modernRoom = RoomBuilder.Build(modernFactory);
+            Room room = RoomBuilder.Build(factory);
 
-            Console.WriteLine("modern room");
-            modernRoom.WhatInRoom();
-        }
-
-        public static void DealWithVenecianceRoom()
-        {
-            FurnitureAbstractFactory venecianceFactory = new VenecianceFurnitureFactory();
-            Room venecianceRoom = RoomBuilder.Build(venecianceFactory);
-
-            Console.WriteLine("veneciance room");
-            venecianceRoom.WhatInRoom();
+            Console.WriteLine($"{factory.Type} room");
+            Console.WriteLine($"\tСтул: {room.Chair.Type}");
+            Console.WriteLine($"\tСтол: {room.Table.Type}");
+            Console.WriteLine();
         }
 
         public static void Main()
         {
-            DealWithModernRoom();
-            DealWithVenecianceRoom();
+            DealWithRoom(new ModernFurnitureFactory());
+            DealWithRoom(new VenecianceFurnitureFactory());
         }
     }
 }
